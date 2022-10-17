@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16.14
 
 WORKDIR /front-app
 
@@ -10,4 +10,6 @@ RUN npm run build
 RUN mkdir -p /var/www/html
 RUN mv build/* /var/www/html
 
-RUN rm -f /front-app
+WORKDIR /
+
+RUN rm -rf front-app

@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+
+  drivenops_db:
+    container_name: drivenops_db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: drivenops
+    restart: always
+    ports:
+      - 2345:5432
+    env_file:
+      - back-end/.env
+    volumes:
+      - drivenops_db:/var/lib/postgresql/data
+
+  server_express:
+    container_name: server_express
+    build: ./back-end
+    ports:
+      - 5000:5000
+    depends_on:
+      - drivenops_db
+    env_file:
+      - back-end/.env
+
+  app_react:
+    container_name: app_react
+    build: ./front-end
+    image: app_react_image
+    volumes:
+      - build_react:/var/www/html
+
+  nginx:
+    container_name: nginx_container
+    build: ./nginx
+    image: nginx_app_image
+    ports:
+      - 8080:80
+    volumes:
+      - build_react:/var/www/html
+    depends_on:
+      - drivenops_db
+      - server_express
+      - app_react
+
+volumes:
+  build_react:
+  drivenops_db:
